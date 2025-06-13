@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart TV Dashboard - Ultra Robust</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            line-height: 1.4;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 65% 35%;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .calendar-section {
+            background-color: #111111;
+            border-radius: 15px;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .calendar-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .eisenhower-section {
+            display: grid;
+            grid-template-rows: 1fr;
+            gap: 20px;
+        }
+        
+        .eisenhower-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            height: 100%;
+        }
+        
+        .quadrant {
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            border: 2px solid;
+        }
+        
+        .quadrant::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .quadrant::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 4px;
+        }
+        
+        .quadrant::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 4px;
+        }
+        
+        .urgent-important {
+            border-color: #ff4444;
+        }
+        
+        .not-urgent-important {
+            border-color: #44ff44;
+        }
+        
+        .urgent-not-important {
+            border-color: #ffaa44;
+        }
+        
+        .not-urgent-not-important {
+            border-color: #4444ff;
+        }
+        
+        .quadrant-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .urgent-important .quadrant-title {
+            color: #ff4444;
+        }
+        
+        .not-urgent-important .quadrant-title {
+            color: #44ff44;
+        }
+        
+        .urgent-not-important .quadrant-title {
+            color: #ffaa44;
+        }
+        
+        .not-urgent-not-important .quadrant-title {
+            color: #4444ff;
+        }
+        
+        .task-item {
+            background-color: #2a2a2a;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-size: 18px;
+            line-height: 1.3;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .urgent-important .task-item {
+            border-left-color: #ff4444;
+        }
+        
+        .not-urgent-important .task-item {
+            border-left-color: #44ff44;
+        }
+        
+        .urgent-not-important .task-item {
+            border-left-color: #ffaa44;
+        }
+        
+        .not-urgent-not-important .task-item {
+            border-left-color: #4444ff;
+        }
+        
+        .task-content {
+            word-wrap: break-word;
+        }
+        
+        .task-due {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        
+        .task-priority {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        
+        .priority-1 { background-color: #ff4444; color: white; }
+        .priority-2 { background-color: #ffaa44; color: white; }
+        .priority-3 { background-color: #4444ff; color: white; }
+        .priority-4 { background-color: #666; color: white; }
+        
+        .loading {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }
+        
+        .error {
+            text-align: center;
+            color: #ff4444;
+            font-size: 16px;
+        }
+        
+        .rate-limited {
+            text-align: center;
+            color: #ffaa44;
+            font-size: 16px;
+        }
+        
+        .debug {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        /* Clock repositioned to not overlap */
+        .clock {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 28px;
+            color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        .cors-note {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffaa44;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #ffaa44;
+            max-width: 300px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #888;
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+        }
+        
+        .status-online { color: #44ff44; }
+        .status-warning { color: #ffaa44; }
+        .status-error { color: #ff4444; }
+        .status-info { color: #4488ff; }
+        
+        .connection-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #44ff44;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+        
+        .connection-indicator.warning {
+            background-color: #ffaa44;
+        }
+        
+        .connection-indicator.error {
+            background-color: #ff4444;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .retry-counter {
+            font-size: 10px;
+            color: #666;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock" id="clock"></div>
+    <div class="status-bar" id="statusBar">🔄 Initializing...</div>
+    <div class="connection-indicator" id="connectionIndicator"></div>
+    
+    <div class="dashboard-container">
+        <!-- Google Calendar Section -->
+        <div class="calendar-section">
+            <iframe 
+                class="calendar-iframe"
+                src="https://calendar.google.com/calendar/embed?height=900&wkst=2&ctz=Europe%2FAmsterdam&showPrint=0&showNav=0&showTitle=0&showTabs=0&showCalendars=0&showTz=0&title=Embed%20iframe%20dashboard&src=bWFyY3VzdmFuZXN2ZWxkQGdtYWlsLmNvbQ&src=b2Y3ZHR1b2JvZTB1OW9yZ3AxYjdibGJuZzRAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=Mzg1N2doMXJocnVzaWY3dmQ2MmwzZHN0MmtAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=NHFkM2xyZnR2NDBtOXFoajhnYXZlYm9nZzFlYTdqcW9AaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=aGxsY3ZqaW9hOWVtZjlxdmpjY2kwZGpybW82ZWc3c2xAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZjU1bHZydDdvbWR1N2cwZGFvcGhmZmhycDBkOTJ1a21AaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=a2sxcXJtbmczamZsMXYwcG0wdjY5N2g5NWVtb2t2YnZAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=Z2NmdjRkaDU3bzMxcWI4aGJvYTZqNXF0cTlnNmhtZmdAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=anNuaXJiOTRpcDgxa2RmZDU0OWQ5ZmRyaXBvazFyYWZAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23e4c441&color=%238e24aa&color=%234285f4&color=%23fe0808&color=%230000aa&color=%23ad1457&color=%23e4c441&color=%23009688&color=%23249584"
+                frameborder="0" 
+                scrolling="no">
+            </iframe>
+        </div>
+        
+        <!-- Eisenhower Matrix Section -->
+        <div class="eisenhower-section">
+            <div class="eisenhower-matrix">
+                <!-- Quadrant 1: Urgent & Important -->
+                <div class="quadrant urgent-important">
+                    <div class="quadrant-title">Urgent & Important</div>
+                    <div id="urgent-important-tasks" class="loading">Taken laden...</div>
+                </div>
+                
+                <!-- Quadrant 2: Not Urgent & Important -->
+                <div class="quadrant not-urgent-important">
+                    <div class="quadrant-title">Not Urgent & Important</div>
+                    <div id="not-urgent-important-tasks" class="loading">Taken laden...</div>
+                </div>
+                
+                <!-- Quadrant 3: Urgent & Not Important -->
+                <div class="quadrant urgent-not-important">
+                    <div class="quadrant-title">Urgent & Not Important</div>
+                    <div id="urgent-not-important-tasks" class="loading">Taken laden...</div>
+                </div>
+                
+                <!-- Quadrant 4: Not Urgent & Not Important -->
+                <div class="quadrant not-urgent-not-important">
+                    <div class="quadrant-title">Not Urgent & Not Important</div>
+                    <div id="not-urgent-not-important-tasks" class="loading">Taken laden...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cors-note" id="corsNote" style="display: none;">
+        CORS issue detected. Visit <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" style="color: #ffaa44;">CORS Demo</a> and click "Request temporary access" to enable Todoist API access.
+    </div>
+
+    <script>
+        // ============================================================================
+        // CONFIGURATION & CONSTANTS
+        // ============================================================================
+        
+        const TODOIST_API_KEY = '51b1e593329f927afe4f1ac8a1638b14cfe72f4d'; // Updated API key
+        const API_BASE_URL = 'https://api.todoist.com/rest/v2';
+        
+        // Multiple CORS proxies for fallback
+        const CORS_PROXIES = [
+            'https://cors-anywhere.herokuapp.com/',
+            'https://api.allorigins.win/raw?url=',
+            'https://corsproxy.io/?',
+            'https://cors-proxy.fringe.zone/'
+        ];
+        
+        // Environment detection
+        const isOnline = window.location.hostname !== 'localhost' && 
+                          window.location.hostname !== '127.0.0.1' && 
+                          !window.location.hostname.includes('192.168.');
+        
+        // ============================================================================
+        // STATE MANAGEMENT
+        // ============================================================================
+        
+        class DashboardState {
+            constructor() {
+                this.reset();
+            }
+            
+            reset() {
+                this.lastSuccessfulFetch = null;
+                this.retryCount = 0;
+                this.currentProxyIndex = 0;
+                this.refreshInterval = 30000; // Start with 30 seconds
+                this.maxRetries = 10;
+                this.backoffMultiplier = 1.5;
+                this.maxInterval = 300000; // Max 5 minutes
+                this.cachedTaskData = null;
+                this.connectionStatus = 'connecting';
+                this.consecutiveFailures = 0;
+                this.lastErrorType = null;
+            }
+            
+            onSuccess() {
+                this.retryCount = 0;
+                this.consecutiveFailures = 0;
+                this.refreshInterval = 30000; // Reset to 30 seconds
+                this.lastSuccessfulFetch = new Date();
+                this.connectionStatus = 'online';
+                this.lastErrorType = null;
+            }
+            
+            onFailure(errorType = 'unknown') {
+                this.retryCount++;
+                this.consecutiveFailures++;
+                this.lastErrorType = errorType;
+                
+                // Exponential backoff with jitter
+                const jitter = Math.random() * 0.1 * this.refreshInterval;
+                this.refreshInterval = Math.min(
+                    this.maxInterval,
+                    this.refreshInterval * this.backoffMultiplier + jitter
+                );
+                
+                // Update connection status
+                if (errorType === 'rate_limit') {
+                    this.connectionStatus = 'rate_limited';
+                } else if (this.consecutiveFailures > 3) {
+                    this.connectionStatus = 'error';
+                } else {
+                    this.connectionStatus = 'warning';
+                }
+            }
+            
+            shouldUseCachedData() {
+                return this.lastSuccessfulFetch && 
+                       (new Date() - this.lastSuccessfulFetch) < 1800000; // 30 minutes
+            }
+            
+            nextProxy() {
+                this.currentProxyIndex = (this.currentProxyIndex + 1) % CORS_PROXIES.length;
+                return CORS_PROXIES[this.currentProxyIndex];
+            }
+        }
+        
+        const state = new DashboardState();
+        
+        // ============================================================================
+        // UTILITY FUNCTIONS
+        // ============================================================================
+        
+        function log(message, data = null) {
+            const timestamp = new Date().toISOString();
+            console.log(`[${timestamp}] [Dashboard] ${message}`, data || '');
+        }
+        
+        function updateStatus(message, type = 'info') {
+            const statusBar = document.getElementById('statusBar');
+            const connectionIndicator = document.getElementById('connectionIndicator');
+            
+            const icons = { 
+                info: '🔄', 
+                success: '✅', 
+                warning: '⚠️', 
+                error: '❌',
+                rate_limit: '⏳'
+            };
+            
+            // Add retry counter for non-success states
+            let displayMessage = `${icons[type]} ${message}`;
+            if (type !== 'success' && state.retryCount > 0) {
+                displayMessage += `<span class="retry-counter">(${state.retryCount}/${state.maxRetries})</span>`;
+            }
+            
+            statusBar.innerHTML = displayMessage;
+            statusBar.className = `status-bar status-${type}`;
+            
+            // Update connection indicator
+            connectionIndicator.className = `connection-indicator ${type === 'success' ? '' : type}`;
+        }
+        
+        function formatDuration(ms) {
+            if (ms < 60000) return `${Math.round(ms / 1000)}s`;
+            return `${Math.round(ms / 60000)}m`;
+        }
+        
+        // ============================================================================
+        // CLOCK FUNCTIONALITY
+        // ============================================================================
+        
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('nl-NL', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Europe/Amsterdam'
+            });
+            const dateString = now.toLocaleDateString('nl-NL', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Europe/Amsterdam'
+            });
+            document.getElementById('clock').textContent = `${dateString} - ${timeString}`;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // ============================================================================
+        // ENHANCED MOCK DATA
+        // ============================================================================
+        
+        const mockTasks = {
+            'urgent-important': [
+                { 
+                    content: 'Complete critical project deliverable', 
+                    priority: 4, 
+                    due: { date: new Date().toISOString().split('T')[0] },
+                    id: 'mock_1'
+                },
+                { 
+                    content: 'Client emergency meeting prep', 
+                    priority: 4, 
+                    due: { date: new Date(Date.now() + 86400000).toISOString().split('T')[0] },
+                    id: 'mock_2'
+                }
+            ],
+            'not-urgent-important': [
+                { 
+                    content: 'Strategic quarterly planning', 
+                    priority: 3, 
+                    due: null,
+                    id: 'mock_3'
+                },
+                { 
+                    content: 'Team skill development workshop', 
+                    priority: 3, 
+                    due: null,
+                    id: 'mock_4'
+                },
+                { 
+                    content: 'Process improvement analysis', 
+                    priority: 3, 
+                    due: null,
+                    id: 'mock_5'
+                }
+            ],
+            'urgent-not-important': [
+                { 
+                    content: 'Respond to non-critical emails', 
+                    priority: 2, 
+                    due: { date: new Date().toISOString().split('T')[0] },
+                    id: 'mock_6'
+                },
+                { 
+                    content: 'Administrative form submissions', 
+                    priority: 2, 
+                    due: null,
+                    id: 'mock_7'
+                }
+            ],
+            'not-urgent-not-important': [
+                { 
+                    content: 'Organize digital file archive', 
+                    priority: 1, 
+                    due: null,
+                    id: 'mock_8'
+                },
+                { 
+                    content: 'Update personal productivity notes', 
+                    priority: 1, 
+                    due: null,
+                    id: 'mock_9'
+                },
+                { 
+                    content: 'Research new productivity tools', 
+                    priority: 1, 
+                    due: null,
+                    id: 'mock_10'
+                }
+            ]
+        };
+        
+        // ============================================================================
+        // ENHANCED API FUNCTIONS
+        // ============================================================================
+        
+        async function fetchTasksWithFallback() {
+            let lastError = null;
+            
+            // Try direct API first (for localhost)
+            if (!isOnline) {
+                try {
+                    return await fetchTasksDirect();
+                } catch (error) {
+                    log('Direct API failed (localhost):', error);
+                    lastError = error;
+                }
+            }
+            
+            // Try CORS proxies for online deployment
+            for (let i = 0; i < CORS_PROXIES.length; i++) {
+                try {
+                    const proxy = state.nextProxy();
+                    log(`Trying CORS proxy ${state.currentProxyIndex + 1}/${CORS_PROXIES.length}: ${proxy}`);
+                    const result = await fetchTasksWithProxy(proxy);
+                    log(`Success with proxy: ${proxy}`);
+                    return result;
+                } catch (error) {
+                    log(`Proxy ${state.currentProxyIndex + 1} failed:`, error);
+                    lastError = error;
+                    
+                    // Special handling for rate limits
+                    if (error.message.includes('429') || error.message.includes('Too many requests')) {
+                        break; // Don't try other proxies for rate limits
+                    }
+                }
+            }
+            
+            throw lastError || new Error('All API attempts failed');
+        }
+        
+        async function fetchTasksDirect() {
+            const response = await fetch(`${API_BASE_URL}/tasks`, {
+                headers: {
+                    'Authorization': `Bearer ${TODOIST_API_KEY}`,
+                    'Content-Type': 'application/json'
+                },
+                signal: AbortSignal.timeout(15000)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+            }
+            
+            return await response.json();
+        }
+        
+        async function fetchTasksWithProxy(proxy) {
+            const url = `${proxy}${API_BASE_URL}/tasks`;
+            const headers = {
+                'Authorization': `Bearer ${TODOIST_API_KEY}`,
+                'Content-Type': 'application/json'
+            };
+            
+            // Add proxy-specific headers
+            if (proxy.includes('cors-anywhere')) {
+                headers['X-Requested-With'] = 'XMLHttpRequest';
+            }
+            
+            const response = await fetch(url, {
+                headers,
+                signal: AbortSignal.timeout(15000)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+            }
+            
+            return await response.json();
+        }
+        
+        async function fetchAllTasks() {
+            try {
+                log(`Fetching tasks... (Attempt: ${state.retryCount + 1}/${state.maxRetries})`);
+                updateStatus('Connecting to Todoist...', 'info');
+                
+                const tasks = await fetchTasksWithFallback();
+                
+                log(`Successfully fetched ${tasks.length} tasks`);
+                state.onSuccess();
+                
+                // Hide CORS note on success
+                document.getElementById('corsNote').style.display = 'none';
+                updateStatus(`${tasks.length} tasks loaded - Next: ${formatDuration(state.refreshInterval)}`, 'success');
+                
+                return tasks;
+                
+            } catch (error) {
+                log('Error fetching tasks:', error);
+                
+                // Determine error type
+                let errorType = 'unknown';
+                if (error.message.includes('429') || error.message.includes('Too many requests')) {
+                    errorType = 'rate_limit';
+                } else if (error.message.includes('403') || error.message.includes('Forbidden')) {
+                    errorType = 'forbidden';
+                } else if (error.message.includes('401') || error.message.includes('Unauthorized')) {
+                    errorType = 'unauthorized';
+                } else if (error.message.includes('CORS') || error.message.includes('Failed to fetch')) {
+                    errorType = 'cors';
+                }
+                
+                state.onFailure(errorType);
+                
+                // Handle specific error types
+                switch (errorType) {
+                    case 'rate_limit':
+                        updateStatus(`Rate limited - retry in ${formatDuration(state.refreshInterval)}`, 'rate_limit');
+                        break;
+                    case 'forbidden':
+                    case 'unauthorized':
+                        updateStatus('API access issue - check credentials', 'error');
+                        break;
+                    case 'cors':
+                        if (isOnline) {
+                            document.getElementById('corsNote').style.display = 'block';
+                            updateStatus('CORS setup required', 'warning');
+                        }
+                        break;
+                    default:
+                        updateStatus(`Connection error - retry in ${formatDuration(state.refreshInterval)}`, 'error');
+                }
+                
+                // Return cached data or mock data
+                if (state.shouldUseCachedData() && state.cachedTaskData) {
+                    log('Using cached data');
+                    return null; // Signal to use cached data
+                } else {
+                    log('Using mock data');
+                    updateStatus(`Demo mode - retry in ${formatDuration(state.refreshInterval)}`, 'warning');
+                    return convertMockTasks();
+                }
+            }
+        }
+        
+        function convertMockTasks() {
+            const allTasks = [];
+            Object.values(mockTasks).forEach(categoryTasks => {
+                allTasks.push(...categoryTasks);
+            });
+            return allTasks;
+        }
+        
+        // ============================================================================
+        // TASK CATEGORIZATION & RENDERING
+        // ============================================================================
+        
+        function categorizeTask(task) {
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            
+            // Parse due date if exists
+            let isUrgent = false;
+            if (task.due) {
+                const dueDate = new Date(task.due.date);
+                isUrgent = dueDate <= tomorrow;
+            }
+            
+            // Important based on priority (p1, p2 = important)
+            const isImportant = task.priority >= 3;
+            
+            if (isUrgent && isImportant) return 'urgent-important';
+            if (!isUrgent && isImportant) return 'not-urgent-important';  
+            if (isUrgent && !isImportant) return 'urgent-not-important';
+            return 'not-urgent-not-important';
+        }
+        
+        function formatTask(task) {
+            const priorityMap = {4: 'P1', 3: 'P2', 2: 'P3', 1: 'P4'};
+            const priorityClass = `priority-${task.priority}`;
+            
+            let dueInfo = '';
+            if (task.due) {
+                const dueDate = new Date(task.due.date);
+                const today = new Date();
+                const isOverdue = dueDate < today;
+                const isToday = dueDate.toDateString() === today.toDateString();
+                
+                let dueDateClass = '';
+                if (isOverdue) dueDateClass = 'style="color: #ff6666;"';
+                else if (isToday) dueDateClass = 'style="color: #ffaa44;"';
+                
+                dueInfo = `<div class="task-due" ${dueDateClass}>Due: ${dueDate.toLocaleDateString('nl-NL')}</div>`;
+            }
+            
+            return `
+                <div class="task-item">
+                    <div class="task-content">
+                        ${task.content}
+                        <span class="task-priority ${priorityClass}">${priorityMap[task.priority]}</span>
+                    </div>
+                    ${dueInfo}
+                </div>
+            `;
+        }
+        
+        function renderTasks(tasksByCategory) {
+            const quadrants = [
+                { id: 'urgent-important', containerId: 'urgent-important-tasks' },
+                { id: 'not-urgent-important', containerId: 'not-urgent-important-tasks' },
+                { id: 'urgent-not-important', containerId: 'urgent-not-important-tasks' },
+                { id: 'not-urgent-not-important', containerId: 'not-urgent-not-important-tasks' }
+            ];
+            
+            quadrants.forEach(quadrant => {
+                const container = document.getElementById(quadrant.containerId);
+                const tasks = tasksByCategory[quadrant.id] || [];
+                
+                if (tasks.length === 0) {
+                    container.innerHTML = '<div class="task-item" style="opacity: 0.6;">Geen taken in deze categorie</div>';
+                } else {
+                    const tasksHtml = tasks.map(formatTask).join('');
+                    container.innerHTML = tasksHtml;
+                }
+                
+                log(`Rendered ${tasks.length} tasks in ${quadrant.id}`);
+            });
+        }
+        
+        // ============================================================================
+        // MAIN TASK LOADING LOGIC
+        // ============================================================================
+        
+        async function loadAllTasks() {
+            try {
+                log(`Starting task load process (Connection: ${state.connectionStatus})`);
+                
+                // Check if we should skip API call due to too many failures
+                if (state.retryCount >= state.maxRetries) {
+                    log('Max retries reached, using cached/mock data');
+                    if (state.cachedTaskData) {
+                        renderTasks(state.cachedTaskData);
+                        updateStatus('Max retries - using cached data', 'warning');
+                    } else {
+                        renderTasks(mockTasks);
+                        updateStatus('Max retries - using demo data', 'warning');
+                    }
+                    return;
+                }
+                
+                const allTasks = await fetchAllTasks();
+                
+                // Handle cached data scenario
+                if (!allTasks && state.cachedTaskData) {
+                    log('Using cached task data');
+                    renderTasks(state.cachedTaskData);
+                    return;
+                }
+                
+                // Process new data
+                if (allTasks) {
+                    const tasksByCategory = {
+                        'urgent-important': [],
+                        'not-urgent-important': [],
+                        'urgent-not-important': [],
+                        'not-urgent-not-important': []
+                    };
+                    
+                    allTasks.forEach(task => {
+                        const category = categorizeTask(task);
+                        tasksByCategory[category].push(task);
+                    });
+                    
+                    log('Task categorization complete:', {
+                        'urgent-important': tasksByCategory['urgent-important'].length,
+                        'not-urgent-important': tasksByCategory['not-urgent-important'].length,
+                        'urgent-not-important': tasksByCategory['urgent-not-important'].length,
+                        'not-urgent-not-important': tasksByCategory['not-urgent-not-important'].length
+                    });
+                    
+                    // Cache successful data
+                    state.cachedTaskData = tasksByCategory;
+                    
+                    // Save to localStorage for persistence
+                    try {
+                        localStorage.setItem('todoist_dashboard_cache', JSON.stringify({
+                            data: tasksByCategory,
+                            timestamp: Date.now()
+                        }));
+                    } catch (e) {
+                        log('Failed to save to localStorage:', e);
+                    }
+                    
+                    renderTasks(tasksByCategory);
+                    log('Task loading and rendering complete');
+                }
+                
+            } catch (error) {
+                log('Error in loadAllTasks:', error);
+                updateStatus('Task loading failed', 'error');
+                
+                // Ultimate fallback
+                if (state.cachedTaskData) {
+                    renderTasks(state.cachedTaskData);
+                    updateStatus('Using cached data', 'warning');
+                } else {
+                    renderTasks(mockTasks);
+                    updateStatus('Using demo data', 'warning');
+                }
+            }
+        }
+        
+        // ============================================================================
+        // INITIALIZATION & SCHEDULING
+        // ============================================================================
+        
+        // Load cached data from localStorage on startup
+        function loadCachedData() {
+            try {
+                const cached = localStorage.getItem('todoist_dashboard_cache');
+                if (cached) {
+                    const { data, timestamp } = JSON.parse(cached);
+                    // Use cache if less than 24 hours old
+                    if (Date.now() - timestamp < 86400000) {
+                        state.cachedTaskData = data;
+                        log('Loaded cached data from localStorage');
+                        return true;
+                    }
+                }
+            } catch (e) {
+                log('Failed to load from localStorage:', e);
+            }
+            return false;
+        }
+        
+        // Adaptive refresh scheduling
+        function scheduleNextRefresh() {
+            const interval = state.refreshInterval;
+            log(`Next refresh scheduled in ${formatDuration(interval)}`);
+            
+            setTimeout(() => {
+                loadAllTasks().finally(() => {
+                    scheduleNextRefresh();
+                });
+            }, interval);
+        }
+        
+        // Calendar refresh
+        function refreshCalendar() {
+            const iframe = document.querySelector('.calendar-iframe');
+            iframe.src = iframe.src;
+            log('Calendar refreshed');
+        }
+        
+        // Global error handler
+        window.addEventListener('error', function(e) {
+            log('Global error:', e.error);
+            updateStatus('Application error detected', 'error');
+        });
+        
+        // ============================================================================
+        // STARTUP SEQUENCE
+        // ============================================================================
+        
+        async function initialize() {
+            log(`Dashboard initializing... (Online: ${isOnline})`);
+            updateStatus('Initializing dashboard...', 'info');
+            
+            // Load cached data if available
+            const hasCachedData = loadCachedData();
+            if (hasCachedData) {
+                renderTasks(state.cachedTaskData);
+                updateStatus('Cached data loaded', 'success');
+            }
+            
+            // Start main loop
+            await loadAllTasks();
+            scheduleNextRefresh();
+            
+            // Schedule calendar refresh every 30 minutes
+            setInterval(refreshCalendar, 1800000);
+            
+            log('Dashboard initialization complete');
+        }
+        
+        // Start the dashboard
+        initialize();
+    </script>
+</body>
+</html>

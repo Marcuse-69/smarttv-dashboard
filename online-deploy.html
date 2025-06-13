@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart TV Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            line-height: 1.4;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+        
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 65% 35%;
+            height: 100vh;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .calendar-section {
+            background-color: #111111;
+            border-radius: 15px;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .calendar-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 10px;
+        }
+        
+        .eisenhower-section {
+            display: grid;
+            grid-template-rows: 1fr;
+            gap: 20px;
+        }
+        
+        .eisenhower-matrix {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 15px;
+            height: 100%;
+        }
+        
+        .quadrant {
+            background-color: #1a1a1a;
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+            border: 2px solid;
+        }
+        
+        .quadrant::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .quadrant::-webkit-scrollbar-track {
+            background: #333;
+            border-radius: 4px;
+        }
+        
+        .quadrant::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 4px;
+        }
+        
+        .urgent-important {
+            border-color: #ff4444;
+        }
+        
+        .not-urgent-important {
+            border-color: #44ff44;
+        }
+        
+        .urgent-not-important {
+            border-color: #ffaa44;
+        }
+        
+        .not-urgent-not-important {
+            border-color: #4444ff;
+        }
+        
+        .quadrant-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .urgent-important .quadrant-title {
+            color: #ff4444;
+        }
+        
+        .not-urgent-important .quadrant-title {
+            color: #44ff44;
+        }
+        
+        .urgent-not-important .quadrant-title {
+            color: #ffaa44;
+        }
+        
+        .not-urgent-not-important .quadrant-title {
+            color: #4444ff;
+        }
+        
+        .task-item {
+            background-color: #2a2a2a;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            border-left: 4px solid;
+            font-size: 18px;
+            line-height: 1.3;
+        }
+        
+        .urgent-important .task-item {
+            border-left-color: #ff4444;
+        }
+        
+        .not-urgent-important .task-item {
+            border-left-color: #44ff44;
+        }
+        
+        .urgent-not-important .task-item {
+            border-left-color: #ffaa44;
+        }
+        
+        .not-urgent-not-important .task-item {
+            border-left-color: #4444ff;
+        }
+        
+        .task-content {
+            word-wrap: break-word;
+        }
+        
+        .task-due {
+            font-size: 14px;
+            color: #aaa;
+            margin-top: 5px;
+        }
+        
+        .task-priority {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        
+        .priority-1 { background-color: #ff4444; color: white; }
+        .priority-2 { background-color: #ffaa44; color: white; }
+        .priority-3 { background-color: #4444ff; color: white; }
+        .priority-4 { background-color: #666; color: white; }
+        
+        .loading {
+            text-align: center;
+            color: #888;
+            font-style: italic;
+        }
+        
+        .error {
+            text-align: center;
+            color: #ff4444;
+            font-size: 16px;
+        }
+        
+        .debug {
+            font-size: 12px;
+            color: #666;
+            margin-top: 10px;
+        }
+        
+        /* Clock repositioned to not overlap */
+        .clock {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 28px;
+            color: #ffffff;
+            background-color: rgba(0, 0, 0, 0.8);
+            padding: 10px 20px;
+            border-radius: 10px;
+            z-index: 1000;
+        }
+        
+        .cors-note {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: rgba(255, 255, 0, 0.1);
+            border: 1px solid #ffaa44;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            color: #ffaa44;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="clock" id="clock"></div>
+    
+    <div class="dashboard-container">
+        <!-- Google Calendar Section -->
+        <div class="calendar-section">
+            <iframe 
+                class="calendar-iframe"
+                src="https://calendar.google.com/calendar/embed?height=900&wkst=2&ctz=Europe%2FAmsterdam&showPrint=0&showNav=0&showTitle=0&showTabs=0&showCalendars=0&showTz=0&title=Embed%20iframe%20dashboard&src=bWFyY3VzdmFuZXN2ZWxkQGdtYWlsLmNvbQ&src=b2Y3ZHR1b2JvZTB1OW9yZ3AxYjdibGJuZzRAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=Mzg1N2doMXJocnVzaWY3dmQ2MmwzZHN0MmtAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ&src=NHFkM2xyZnR2NDBtOXFoajhnYXZlYm9nZzFlYTdqcW9AaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=aGxsY3ZqaW9hOWVtZjlxdmpjY2kwZGpybW82ZWc3c2xAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=ZjU1bHZydDdvbWR1N2cwZGFvcGhmZmhycDBkOTJ1a21AaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=a2sxcXJtbmczamZsMXYwcG0wdjY5N2g5NWVtb2t2YnZAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=Z2NmdjRkaDU3bzMxcWI4aGJvYTZqNXF0cTlnNmhtZmdAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&src=anNuaXJiOTRpcDgxa2RmZDU0OWQ5ZmRyaXBvazFyYWZAaW1wb3J0LmNhbGVuZGFyLmdvb2dsZS5jb20&color=%23e4c441&color=%238e24aa&color=%234285f4&color=%23fe0808&color=%230000aa&color=%23ad1457&color=%23e4c441&color=%23009688&color=%23249584"
+                frameborder="0" 
+                scrolling="no">
+            </iframe>
+        </div>
+        
+        <!-- Eisenhower Matrix Section -->
+        <div class="eisenhower-section">
+            <div class="eisenhower-matrix">
+                <!-- Quadrant 1: Urgent & Important -->
+                <div class="quadrant urgent-important">
+                    <div class="quadrant-title">Urgent & Important</div>
+                    <div id="urgent-important-tasks" class="loading">Taken laden...</div>
+                </div>
+                
+                <!-- Quadrant 2: Not Urgent & Important -->
+                <div class="quadrant not-urgent-important">
+                    <div class="quadrant-title">Not Urgent & Important</div>
+                    <div id="not-urgent-important-tasks" class="loading">Taken laden...</div>
+                </div>
+                
+                <!-- Quadrant 3: Urgent & Not Important -->
+                <div class="quadrant urgent-not-important">
+                    <div class="quadrant-title">Urgent & Not Important</div>
+                    <div id="urgent-not-important-tasks" class="loading">Taken laden...</div>
+                </div>
+                
+                <!-- Quadrant 4: Not Urgent & Not Important -->
+                <div class="quadrant not-urgent-not-important">
+                    <div class="quadrant-title">Not Urgent & Not Important</div>
+                    <div id="not-urgent-not-important-tasks" class="loading">Taken laden...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="cors-note" id="corsNote" style="display: none;">
+        CORS issue detected. Visit <a href="https://cors-anywhere.herokuapp.com/corsdemo" target="_blank" style="color: #ffaa44;">CORS Demo</a> and click "Request temporary access" to enable Todoist API access.
+    </div>
+
+    <script>
+        const TODOIST_API_KEY = 'e5a7ba7f8c84cfabd09f1b198e688357f90c6026';
+        const API_BASE_URL = 'https://api.todoist.com/rest/v2';
+        
+        // Detect if we're running online vs localhost
+        const isOnline = window.location.hostname !== 'localhost' && 
+                          window.location.hostname !== '127.0.0.1' && 
+                          !window.location.hostname.includes('192.168.');
+        
+        // Debug flag
+        const DEBUG = true;
+        
+        function log(message, data = null) {
+            if (DEBUG) {
+                console.log(`[Todoist Debug] ${message}`, data || '');
+            }
+        }
+        
+        // Clock functionality
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('nl-NL', {
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                timeZone: 'Europe/Amsterdam'
+            });
+            const dateString = now.toLocaleDateString('nl-NL', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'Europe/Amsterdam'
+            });
+            document.getElementById('clock').textContent = `${dateString} - ${timeString}`;
+        }
+        
+        setInterval(updateClock, 1000);
+        updateClock();
+        
+        // Todoist API functions with CORS handling
+        async function fetchAllTasks() {
+            try {
+                log(`Fetching all tasks... (Online: ${isOnline})`);
+                
+                let url = `${API_BASE_URL}/tasks`;
+                let headers = {
+                    'Authorization': `Bearer ${TODOIST_API_KEY}`,
+                    'Content-Type': 'application/json'
+                };
+                
+                // Use CORS proxy for online deployment
+                if (isOnline) {
+                    url = `https://cors-anywhere.herokuapp.com/${API_BASE_URL}/tasks`;
+                    headers['X-Requested-With'] = 'XMLHttpRequest';
+                }
+                
+                const response = await fetch(url, { headers });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+                }
+                
+                const tasks = await response.json();
+                log(`Fetched ${tasks.length} tasks successfully`);
+                
+                // Hide CORS note if successful
+                document.getElementById('corsNote').style.display = 'none';
+                
+                return tasks;
+            } catch (error) {
+                log('Error fetching tasks:', error);
+                
+                // Show CORS note if online and CORS error
+                if (isOnline && error.message.includes('CORS')) {
+                    document.getElementById('corsNote').style.display = 'block';
+                }
+                
+                throw error;
+            }
+        }
+        
+        function categorizeTask(task) {
+            // Get current date for comparison
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(today.getDate() + 1);
+            
+            // Parse due date if exists
+            let isUrgent = false;
+            if (task.due) {
+                const dueDate = new Date(task.due.date);
+                // Urgent if due today, tomorrow, or overdue
+                isUrgent = dueDate <= tomorrow;
+            }
+            
+            // Important based on priority (p1, p2 = important)
+            const isImportant = task.priority >= 3; // Todoist: 4=p1(highest), 3=p2, 2=p3, 1=p4(lowest)
+            
+            if (isUrgent && isImportant) return 'urgent-important';
+            if (!isUrgent && isImportant) return 'not-urgent-important';  
+            if (isUrgent && !isImportant) return 'urgent-not-important';
+            return 'not-urgent-not-important';
+        }
+        
+        function formatTask(task) {
+            const priorityMap = {4: 'P1', 3: 'P2', 2: 'P3', 1: 'P4'};
+            const priorityClass = `priority-${task.priority}`;
+            
+            let dueInfo = '';
+            if (task.due) {
+                const dueDate = new Date(task.due.date);
+                dueInfo = `<div class="task-due">Due: ${dueDate.toLocaleDateString('nl-NL')}</div>`;
+            }
+            
+            return `
+                <div class="task-item">
+                    <div class="task-content">
+                        ${task.content}
+                        <span class="task-priority ${priorityClass}">${priorityMap[task.priority]}</span>
+                    </div>
+                    ${dueInfo}
+                </div>
+            `;
+        }
+        
+        function renderTasks(tasksByCategory) {
+            const quadrants = [
+                { id: 'urgent-important', containerId: 'urgent-important-tasks' },
+                { id: 'not-urgent-important', containerId: 'not-urgent-important-tasks' },
+                { id: 'urgent-not-important', containerId: 'urgent-not-important-tasks' },
+                { id: 'not-urgent-not-important', containerId: 'not-urgent-not-important-tasks' }
+            ];
+            
+            quadrants.forEach(quadrant => {
+                const container = document.getElementById(quadrant.containerId);
+                const tasks = tasksByCategory[quadrant.id] || [];
+                
+                if (tasks.length === 0) {
+                    container.innerHTML = '<div class="task-item">Geen taken gevonden</div>';
+                } else {
+                    const tasksHtml = tasks.map(formatTask).join('');
+                    container.innerHTML = tasksHtml;
+                }
+                
+                log(`Rendered ${tasks.length} tasks in ${quadrant.id}`);
+            });
+        }
+        
+        async function loadAllTasks() {
+            try {
+                log('Starting task load process...');
+                
+                // Reset all quadrants to loading state
+                const containerIds = ['urgent-important-tasks', 'not-urgent-important-tasks', 
+                                    'urgent-not-important-tasks', 'not-urgent-not-important-tasks'];
+                
+                containerIds.forEach(id => {
+                    document.getElementById(id).innerHTML = '<div class="loading">Taken laden...</div>';
+                });
+                
+                // Fetch all tasks
+                const allTasks = await fetchAllTasks();
+                
+                // Categorize tasks into Eisenhower Matrix quadrants
+                const tasksByCategory = {
+                    'urgent-important': [],
+                    'not-urgent-important': [],
+                    'urgent-not-important': [],
+                    'not-urgent-not-important': []
+                };
+                
+                allTasks.forEach(task => {
+                    const category = categorizeTask(task);
+                    tasksByCategory[category].push(task);
+                });
+                
+                log('Task categorization complete:', {
+                    'urgent-important': tasksByCategory['urgent-important'].length,
+                    'not-urgent-important': tasksByCategory['not-urgent-important'].length,
+                    'urgent-not-important': tasksByCategory['urgent-not-important'].length,
+                    'not-urgent-not-important': tasksByCategory['not-urgent-not-important'].length
+                });
+                
+                // Render tasks in their respective quadrants
+                renderTasks(tasksByCategory);
+                
+                log('Task loading and rendering complete');
+                
+            } catch (error) {
+                log('Error in loadAllTasks:', error);
+                
+                // Show error in all quadrants
+                const containerIds = ['urgent-important-tasks', 'not-urgent-important-tasks', 
+                                    'urgent-not-important-tasks', 'not-urgent-not-important-tasks'];
+                
+                const errorMessage = isOnline && error.message.includes('CORS') ? 
+                    'CORS Error: Enable CORS access (see note)' : 
+                    `API Error: ${error.message}`;
+                
+                containerIds.forEach(id => {
+                    document.getElementById(id).innerHTML = 
+                        `<div class="error">${errorMessage}</div>
+                         <div class="debug">Check console for details</div>`;
+                });
+            }
+        }
+        
+        // Initial load
+        loadAllTasks();
+        
+        // Auto-refresh every 2 seconds for near real-time updates
+        setInterval(loadAllTasks, 2000);
+        
+        // Refresh calendar iframe every 30 minutes
+        setInterval(() => {
+            const iframe = document.querySelector('.calendar-iframe');
+            iframe.src = iframe.src;
+        }, 1800000);
+        
+        // Add global error handler
+        window.addEventListener('error', function(e) {
+            log('Global error:', e.error);
+        });
+        
+        log(`Dashboard initialized (Online: ${isOnline})`);
+    </script>
+</body>
+</html>

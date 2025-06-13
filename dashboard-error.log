@@ -1,0 +1,155 @@
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+127.0.0.1 - - [11/Jun/2025 09:01:32] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 09:01:37] "GET / HTTP/1.1" 200 -
+Traceback (most recent call last):
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 43, in <module>
+    start_server()
+  File "/Users/marcusvanesveld/smarttv-dashboard/server.py", line 31, in start_server
+    with socketserver.TCPServer(("", PORT), CORSHTTPRequestHandler) as httpd:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 452, in __init__
+    self.server_bind()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/socketserver.py", line 466, in server_bind
+    self.socket.bind(self.server_address)
+OSError: [Errno 48] Address already in use
+127.0.0.1 - - [11/Jun/2025 09:03:26] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 09:03:31] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 09:05:47] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [11/Jun/2025 09:06:10] "HEAD / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:09:33] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:09:34] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:09:34] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:09:34] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:09:34] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:09:34] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:09:34] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:09:34] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:10:34] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:10:35] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:10:35] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:25] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:12:25] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:12:25] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:25] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:26] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:26] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:26] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:26] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:26] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:12:26] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:26] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:26] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:26] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:26] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:26] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET /favicon.ico HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET /apple-touch-icon.png HTTP/1.1" 404 -
+192.168.0.117 - - [11/Jun/2025 09:12:56] code 404, message File not found
+192.168.0.117 - - [11/Jun/2025 09:12:56] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [11/Jun/2025 09:16:45] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2025 00:40:52] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2025 01:12:10] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [12/Jun/2025 01:13:22] "HEAD / HTTP/1.1" 200 -
+127.0.0.1 - - [13/Jun/2025 16:37:58] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [13/Jun/2025 16:37:58] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [13/Jun/2025 16:37:58] "GET / HTTP/1.1" 200 -
+192.168.0.117 - - [13/Jun/2025 16:37:58] "GET / HTTP/1.1" 200 -
